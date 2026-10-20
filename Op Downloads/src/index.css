@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .font-pixel {
+    font-family: 'Silkscreen', 'Press Start 2P', monospace;
+    letter-spacing: -0.02em;
+  }
+  .font-pixel-display {
+    font-family: 'Press Start 2P', monospace;
+    line-height: 1.4;
+  }
+  .font-code {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+}
+
+body {
+  background-color: #F6F3EB;
+  color: #0F1B2E;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Sharp retro-modern containers with textbook paper feel */
+.retro-card {
+  background-color: #FFFFFF;
+  border: 2px solid #0F1B2E;
+  border-radius: 0px;
+  box-shadow: 4px 4px 0px #0F1B2E;
+}
+
+.retro-card-sm {
+  background-color: #FFFFFF;
+  border: 1.5px solid #0F1B2E;
+  border-radius: 0px;
+  box-shadow: 2px 2px 0px #0F1B2E;
+}
+
+.yellow-indent {
+  background-color: #FFE600;
+  display: inline-block;
+  height: 100%;
+  width: 14px;
+}
+

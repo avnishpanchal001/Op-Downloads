@@ -1,0 +1,6 @@
+{
+  "name": "op.downloads - Universal Video & Image Downloader",
+  "description": "Advanced Chrome Extension (Manifest V3) for downloading any video (MP4) or image (JPG/PNG), hover corner buttons, restricted media unlocker, and 1x-10x speed controller.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

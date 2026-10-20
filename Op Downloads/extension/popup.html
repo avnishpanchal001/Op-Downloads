@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>op.downloads</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 340px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #FFFFFF;
+      color: #0F172A;
+      padding: 14px;
+      user-select: none;
+    }
+    :focus-visible {
+      outline: 2px solid #FFE600;
+      outline-offset: 2px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-box {
+      width: 28px;
+      height: 28px;
+      background: #FFE600;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(15, 23, 42, 0.15);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    .brand-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0F172A;
+      letter-spacing: -0.5px;
+    }
+    .version-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: #475569;
+      background: #F1F5F9;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    /* Navigation Tabs */
+    .tabs-nav {
+      display: flex;
+      background: #F1F5F9;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 3px;
+      margin-bottom: 12px;
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 6px 0;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+    .tab-btn.active {
+      background: #FFFFFF;
+      color: #0F172A;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* Tab Contents */
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Cards */
+    .section-card {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #0F172A;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: #0F172A;
+      background: #FFE600;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    /* Video UI */
+    .video-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      padding: 6px 8px;
+      border-radius: 6px;
+    }
+    .quality-select {
+      width: 100%;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0F172A;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      outline: none;
+      cursor: pointer;
+    }
+    .action-btn {
+      width: 100%;
+      background: #0F172A;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .action-btn:hover {
+      background: #1E293B;
+    }
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .status-msg {
+      font-size: 10px;
+      font-weight: 600;
+      margin-top: 6px;
+      text-align: center;
+      min-height: 14px;
+      color: #64748B;
+      word-break: break-word;
+    }
+    .status-msg.success { color: #059669; }
+    .status-msg.error { color: #DC2626; }
+
+    /* Detected / Sniffed Lists */
+    .detected-list {
+      max-height: 160px;
+      overflow-y: auto;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .detected-item {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .detected-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .detected-item-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0F172A;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .detected-item-res {
+      font-size: 9px;
+      color: #64748B;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .small-dl-btn {
+      background: #FFE600;
+      color: #0F172A;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease;
+    }
+    .small-dl-btn:hover {
+      background: #FACC15;
+    }
+    .small-dl-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Images UI */
+    .fmt-pill-group {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .fmt-pill {
+      flex: 1;
+      padding: 5px 0;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      cursor: pointer;
+      text-align: center;
+    }
+    .fmt-pill.active {
+      background: #FFE600;
+      border-color: #E2B900;
+      color: #0F172A;
+    }
+    .images-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-height: 190px;
+      overflow-y: auto;
+      margin-top: 8px;
+      padding: 2px;
+    }
+    .img-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .img-thumb {
+      width: 100%;
+      height: 60px;
+      object-fit: cover;
+      background: #F1F5F9;
+    }
+    .img-dl-btn {
+      width: 100%;
+      padding: 4px 0;
+      background: #0F172A;
+      color: #FFFFFF;
+      border: none;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+    }
+    .img-dl-btn:hover {
+      background: #1E293B;
+    }
+
+    /* Speed Grid */
+    .speed-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+    .speed-btn {
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 7px 0;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0F172A;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+    .speed-btn:hover {
+      background: #F1F5F9;
+      border-color: #94A3B8;
+    }
+    .speed-btn.active {
+      background: #FFE600;
+      border-color: #E2B900;
+      color: #0F172A;
+      box-shadow: 0 1px 4px rgba(255, 230, 0, 0.35);
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .speed-slider {
+      flex: 1;
+      accent-color: #FFE600;
+      cursor: pointer;
+    }
+    .slider-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #0F172A;
+      min-width: 40px;
+      text-align: right;
+    }
+    .status-hint {
+      font-size: 10px;
+      font-weight: 600;
+      color: #64748B;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* Settings Toggle Row */
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #E2E8F0;
+    }
+    .setting-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+    .setting-desc {
+      font-size: 9px;
+      color: #64748B;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 36px;
+      height: 20px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider-switch {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #CBD5E1;
+      transition: .2s;
+      border-radius: 20px;
+    }
+    .slider-switch:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+    input:checked + .slider-switch {
+      background-color: #10B981;
+    }
+    input:checked + .slider-switch:before {
+      transform: translateX(16px);
+    }
+
+    .copy-cmd-btn {
+      width: 100%;
+      background: #F1F5F9;
+      color: #475569;
+      border: 1px dashed #CBD5E1;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .copy-cmd-btn:hover { background: #E2E8F0; color: #0F172A; }
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #64748B;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <div class="logo-box" aria-hidden="true">
+        <!-- Pixelated Download Icon -->
+        <svg width="18" height="18" viewBox="0 0 12 12" style="image-rendering: pixelated;">
+          <rect x="4" y="0" width="4" height="4" fill="#0F172A" />
+          <rect x="1" y="4" width="10" height="1" fill="#0F172A" />
+          <rect x="2" y="5" width="8" height="1" fill="#0F172A" />
+          <rect x="3" y="6" width="6" height="1" fill="#0F172A" />
+          <rect x="4" y="7" width="4" height="1" fill="#0F172A" />
+          <rect x="0" y="9" width="2" height="2" fill="#0F172A" />
+          <rect x="10" y="9" width="2" height="2" fill="#0F172A" />
+          <rect x="0" y="10" width="12" height="2" fill="#0F172A" />
+        </svg>
+      </div>
+      <div class="brand-name">op.downloads</div>
+    </div>
+    <span class="version-tag">v3.2.0</span>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-nav" role="tablist" aria-label="Main navigation">
+    <button id="tabBtnVideos" class="tab-btn active" role="tab" aria-selected="true" aria-controls="tabVideos" tabindex="0" data-tab="tabVideos">🎬 Videos</button>
+    <button id="tabBtnImages" class="tab-btn" role="tab" aria-selected="false" aria-controls="tabImages" tabindex="-1" data-tab="tabImages">🖼 Images</button>
+    <button id="tabBtnSpeed" class="tab-btn" role="tab" aria-selected="false" aria-controls="tabSpeed" tabindex="-1" data-tab="tabSpeed">⚡ Speed</button>
+    <button id="tabBtnSettings" class="tab-btn" role="tab" aria-selected="false" aria-controls="tabSettings" tabindex="-1" data-tab="tabSettings">⚙ Settings</button>
+  </div>
+
+  <!-- TAB 1: VIDEOS -->
+  <div id="tabVideos" class="tab-content active" role="tabpanel" aria-labelledby="tabBtnVideos">
+    <!-- Active Video / YouTube Downloader -->
+    <div class="section-card" id="mainVideoCard">
+      <div class="section-header">
+        <span class="section-title">🎬 Video Downloader (MP4)</span>
+      </div>
+
+      <div id="ytDownloaderSection">
+        <div id="videoTitleDisplay" class="video-title">
+          Detecting video...
+        </div>
+
+        <select id="qualitySelect" class="quality-select" aria-label="Select video quality">
+          <option value="1080">1080p Full HD (MP4)</option>
+          <option value="720" selected>720p HD (MP4 - Recommended)</option>
+          <option value="480">480p (MP4)</option>
+          <option value="360">360p (MP4 - Fast)</option>
+          <option value="mp3">Audio Only (MP3)</option>
+        </select>
+
+        <button id="downloadBtn" class="action-btn" aria-label="Download video directly">
+          <span>⬇ Download Directly to PC</span>
+        </button>
+
+        <div id="downloadStatus" class="status-msg" role="status" aria-live="polite"></div>
+
+        <button id="copyCmdBtn" class="copy-cmd-btn" aria-label="Copy lossless 4K terminal command">
+          <span>📋 Copy Lossless 4K PC Command</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sniffed Media Streams (HLS / m3u8 & MP4) -->
+    <div class="section-card" id="sniffedStreamsSection" style="display: none;">
+      <div class="section-header">
+        <span class="section-title">📡 Sniffed Streams (<span id="sniffedCount">0</span>)</span>
+        <span class="badge" style="background: #10B981; color: #FFFFFF;">HLS / MP4</span>
+      </div>
+      <div style="font-size: 10px; color: #64748B; margin-bottom: 6px;">
+        1-Click direct streams detected from network:
+      </div>
+      <div id="sniffedStreamsList" class="detected-list"></div>
+    </div>
+
+    <!-- Detected In-Page Web Videos -->
+    <div class="section-card" id="webVideosSection" style="display: none;">
+      <div class="section-header">
+        <span class="section-title">🎬 Page Videos (<span id="webVideoCount">0</span>)</span>
+      </div>
+      <div id="detectedVideosList" class="detected-list"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: IMAGES -->
+  <div id="tabImages" class="tab-content" role="tabpanel" aria-labelledby="tabBtnImages">
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-title">🖼 Download Any Image</span>
+        <span id="imageCountBadge" class="badge">0</span>
+      </div>
+
+      <div class="fmt-pill-group">
+        <button id="fmtPng" class="fmt-pill active" aria-label="Convert to PNG format">PNG Format</button>
+        <button id="fmtJpg" class="fmt-pill" aria-label="Convert to JPG format">JPG Format</button>
+      </div>
+
+      <button id="downloadAllImagesBtn" class="action-btn" style="margin-bottom: 6px;" aria-label="Download all detected images">
+        <span>⬇ Download All Images</span>
+      </button>
+
+      <div id="imagesStatus" class="status-msg" role="status" aria-live="polite"></div>
+
+      <div id="imagesGrid" class="images-grid"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: SPEED (1x - 10x) -->
+  <div id="tabSpeed" class="tab-content" role="tabpanel" aria-labelledby="tabBtnSpeed">
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-title">⚡ Playback Speed (1x - 10x)</span>
+        <span id="speedBadge" class="badge">1.0x</span>
+      </div>
+
+      <div class="speed-grid">
+        <button class="speed-btn" data-spd="1.0" aria-label="Set speed to 1x">1x</button>
+        <button class="speed-btn" data-spd="1.5" aria-label="Set speed to 1.5x">1.5x</button>
+        <button class="speed-btn" data-spd="2.0" aria-label="Set speed to 2x">2x</button>
+        <button class="speed-btn" data-spd="3.0" aria-label="Set speed to 3x">3x</button>
+        <button class="speed-btn" data-spd="5.0" aria-label="Set speed to 5x">5x</button>
+        <button class="speed-btn" data-spd="10.0" aria-label="Set speed to 10x">10x</button>
+      </div>
+
+      <div class="slider-row">
+        <input type="range" id="speedSlider" class="speed-slider" min="0.25" max="10.0" step="0.25" value="1.0" aria-label="Speed adjustment slider">
+        <span id="sliderVal" class="slider-label">1.0x</span>
+      </div>
+
+      <div id="speedVideoCount" class="status-hint">
+        ⚡ Controls any video across all websites in Chrome
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: SETTINGS -->
+  <div id="tabSettings" class="tab-content" role="tabpanel" aria-labelledby="tabBtnSettings">
+    <div class="section-card">
+      <div class="section-header">
+        <span class="section-title">⚙ Preferences</span>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Hover Download Button</div>
+          <div class="setting-desc">Top-right corner badge on any video/image</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="hoverToggle" checked aria-label="Enable hover download buttons">
+          <span class="slider-switch"></span>
+        </label>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">HLS/m3u8 Stream Sniffer</div>
+          <div class="setting-desc">Stitches multi-segment streaming videos directly</div>
+        </div>
+        <span style="font-size: 10px; font-weight: 700; color: #10B981;">Active</span>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Restricted Media Detection</div>
+          <div class="setting-desc">Detects overlays, canvas, and protected MSE players</div>
+        </div>
+        <span style="font-size: 10px; font-weight: 700; color: #10B981;">Active</span>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>op.downloads - Universal PC Downloader</span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
